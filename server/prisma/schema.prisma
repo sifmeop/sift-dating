@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./__generated__"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AuthMethod {
+  CREDENTIALS
+  TELEGRAM
+  GOOGLE
+  GITHUB
+}
+
+enum TokenType {
+  VERIFICATION
+  TWO_FACTOR
+  PASSWORD_RESET
+}
+
+model User {
+  id               String     @id @default(uuid())
+  name             String?
+  email            String     @unique
+  password         String?
+  isVerified       Boolean    @default(false)
+  method           AuthMethod
+  createdAt        DateTime   @default(now())
+  isTwoFaEnabled   Boolean    @default(false)
+  twoFaSecret      String?
+  chats            Chat[]     @relation("ChatParticipants")
+  sentMessages     Message[]  @relation("MessageAuthor")
+  receivedMessages Message[]  @relation("MessageReceiver")
+}
+
+model Token {
+  id        String    @id @default(uuid())
+  email     String
+  token     String    @unique
+  type      TokenType
+  expiresIn DateTime
+}
+
+model Chat {
+  id           String    @id @default(uuid())
+  messages     Message[]
+  participants User[]    @relation("ChatParticipants")
+  createdAt    DateTime  @default(now())
+}
+
+model Message {
+  id         String    @id @default(uuid())
+  text       String
+  author     User      @relation("MessageAuthor", fields: [authorId], references: [id])
+  authorId   String
+  receiver   User      @relation("MessageReceiver", fields: [receiverId], references: [id])
+  receiverId String
+  replies    Message[] @relation("MessageReplyTo")
+  replyTo    Message?  @relation("MessageReplyTo", fields: [replyToId], references: [id])
+  replyToId  String?   @unique
+  chat       Chat      @relation(fields: [chatId], references: [id])
+  chatId     String
+  readAt     DateTime?
+  editedAt   DateTime?
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+}
