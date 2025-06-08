@@ -1,14 +1,14 @@
-import { createContext, useContext } from 'react'
+import { createContext, use } from 'react'
 import { Socket } from 'socket.io-client'
 
 export const SocketContext = createContext<Socket | null>(null)
 
 export const useSocket = () => {
-  const socket = useContext(SocketContext)
+  const context = use(SocketContext)
 
-  if (!socket) {
+  if (!context) {
     throw new Error('Socket is not available! Did you forget to wrap with SocketProvider?')
   }
 
-  return socket
+  return context
 }

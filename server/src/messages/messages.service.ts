@@ -9,19 +9,5 @@ export class MessagesService {
     private readonly socket: UsersGateway
   ) {}
 
-  async create() {
-    const message = await this.prismaService.message.create({
-      data: {
-        text: '',
-        authorId: '',
-        chatId: '',
-        receiverId: '',
-        replyToId: '',
-        editedAt: '',
-        deletedAt: ''
-      }
-    })
-
-    this.socket.sendMessage(message.authorId, 'new-message', message)
-  }
+  async create() {}
 }

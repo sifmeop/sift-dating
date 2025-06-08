@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { API_HOST } from '~/shared/constants'
 import { useIsAuthenticated } from '~/shared/hooks'
-import { useSocketHandlers } from './handlers'
-import { SocketContext } from './lib'
+import { useSocketHandlers } from './handlers/useSocketHandlers'
+import { SocketContext } from './lib/context'
 
 export const SocketProvider = ({ children }: React.PropsWithChildren) => {
   const socketRef = useRef<Socket | null>(null)
@@ -27,7 +27,6 @@ export const SocketProvider = ({ children }: React.PropsWithChildren) => {
       })
 
       setSocket(socketRef.current)
-      console.log('YES')
       setupSocketHandlers(socketRef.current)
     }
 

@@ -61,6 +61,7 @@ export class ChatsService {
         (p) => p.id !== userId
       )[0]
       user.isOnline = this.socket.isUserOnline(user.id)
+      user.isTyping = false
       const message = messages[0]
       const unreadMessagesCount = unReadMessages.filter(
         (m) => m.chatId === chat.id

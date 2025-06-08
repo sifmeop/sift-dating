@@ -1,7 +1,6 @@
 import { forwardRef, Inject } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import {
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -82,8 +81,6 @@ export class UsersGateway
         this.server.to(room).emit('userOnline', { userId: client.userId })
         await client.join(room)
       }
-
-      console.debug(`Клиент подключен: ${client.userId}`)
     } catch (error) {
       client.disconnect()
     }
@@ -103,21 +100,44 @@ export class UsersGateway
     }
 
     this.userSockets.delete(client.userId)
-
-    console.debug(`Клиент отключен: ${client.userId}`)
   }
 
-  @SubscribeMessage('message')
-  handleMessage(@MessageBody() message: string) {
-    console.debug('message', message)
+  @SubscribeMessage('startTyping')
+  handleStartTyping(client: AuthenticatedSocket, data: { chatId: string }) {
+    const socketIds = this.server.sockets.adapter.rooms.get(
+      `chat:${data.chatId}`
+    )
+
+    if (socketIds.size < 2) {
+      return
+    }
+
+    const recipientSocketId = Array.from(socketIds).filter(
+      (id) => id !== client.id
+    )[0]
+
+    this.server.to(recipientSocketId).emit('startTyping', {
+      userId: client.userId
+    })
   }
 
-  public sendMessage(userId: string, event: string, data: any) {
-    // const user = this.connectedUsers.get(userId)
-    // if (!user) {
-    //   return
-    // }
-    // user.client.emit(event, data)
+  @SubscribeMessage('stopTyping')
+  handleStopTyping(client: AuthenticatedSocket, data: { chatId: string }) {
+    const socketIds = this.server.sockets.adapter.rooms.get(
+      `chat:${data.chatId}`
+    )
+
+    if (socketIds.size < 2) {
+      return
+    }
+
+    const recipientSocketId = Array.from(socketIds).filter(
+      (id) => id !== client.id
+    )[0]
+
+    this.server.to(recipientSocketId).emit('stopTyping', {
+      userId: client.userId
+    })
   }
 
   private async validateSession(client: Socket): Promise<string> {

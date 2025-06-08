@@ -4,7 +4,7 @@ import { Loader } from '~/shared/components/ui'
 import { useGetChatsQuery } from '../../hooks'
 import { ChatRow } from './ChatRow'
 
-export const ChatsList = () => {
+export const ChatList = () => {
   const { data, isLoading, isError, isSuccess } = useGetChatsQuery()
 
   // data.sort((a, b) => {

@@ -1,9 +1,12 @@
 'use client'
 
 import { HeroUIProvider, ToastProvider } from '@heroui/react'
-
-import { SocketProvider } from '../components/socket/provider'
+import dayjs from 'dayjs'
+import isoWeek from 'dayjs/plugin/isoWeek'
+import { SocketProvider } from '../socket/provider'
 import { TanstackQueryProvider } from './TanstackQueryProvider'
+
+dayjs.extend(isoWeek)
 
 export const Providers = ({ children }: React.PropsWithChildren) => {
   return (

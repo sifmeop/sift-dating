@@ -25,13 +25,13 @@ export const ChatRow = ({ chat, user, message, unreadMessagesCount }: any) => {
           <Avatar name={user.name} size='lg' src={undefined} />
         </div>
         <div className='flex-1 overflow-hidden'>
-          <div className='flex items-center gap-1.5'>
+          <div className='flex items-center gap-1'>
             <h3 className='mr-auto truncate'>{user.name}</h3>
             <MessageStatus isRead={!!message.readAt} />
             <span className='text-sm text-default-500'>{formatLastMessageTime(message.createdAt)}</span>
           </div>
           <div className='flex items-center justify-between gap-2'>
-            <p className='text-sm text-default-500 truncate'>{message.text}</p>
+            <p className='text-sm text-default-500 truncate'>{user.isTyping ? 'Typing...' : message.text}</p>
             {unreadMessagesCount > 0 && (
               <div className='min-w-5 h-5 px-1 rounded-full bg-blue-500 text-white text-xs grid place-items-center'>
                 {unreadMessagesCount}
